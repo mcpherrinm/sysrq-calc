@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Magic SysRq Key Bitmask Calculator</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 580px;
+            border: 1px solid var(--border-color);
+        }
+
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+            font-weight: 800;
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label[for="sysrq-value"] {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            color: var(--text-muted);
+        }
+
+        input[type="number"] {
+            padding: 0.75rem 1rem;
+            font-size: 1.25rem;
+            width: 100%;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        legend {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .bitmask-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .bitmask-list > li {
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .bitmask-list > li:hover {
+            background-color: #f1f5f9;
+        }
+
+        .bitmask-list > li input[type="checkbox"] {
+            margin-right: 1rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .bitmask-list > li label {
+            cursor: pointer;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+        }
+
+        .bit-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-weight: 600;
+            background: #e2e8f0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            min-width: 4.5rem;
+            text-align: center;
+        }
+
+        .bit-desc {
+            margin-left: 1rem;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .bitmask-list > li {
+                padding: 0;
+            }
+            .bitmask-list > li label {
+                padding: 0.5rem;
+            }
+            .bit-desc {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>SysRq Calculator</h1>
+            <p>Linux SysRq permissions</p>
+
+        </header>
+        
+        <div class="input-group">
+            <label for="sysrq-value">Value</label>
+            <input type="number" id="sysrq-value" value="176" min="0" placeholder="e.g. 176">
+        </div>
+
+        <fieldset>
+            <legend>Individual Functions</legend>
+            <ul class="bitmask-list" id="checkbox-list">
+                <li>
+                    <label for="bit-2">
+                        <input type="checkbox" id="bit-2" value="2">
+                        <span class="bit-value">2 (0x02)</span>
+                        <span class="bit-desc">Control of console logging level</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-4">
+                        <input type="checkbox" id="bit-4" value="4">
+                        <span class="bit-value">4 (0x04)</span>
+                        <span class="bit-desc">Control of keyboard (SAK, unraw)</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-8">
+                        <input type="checkbox" id="bit-8" value="8">
+                        <span class="bit-value">8 (0x08)</span>
+                        <span class="bit-desc">Debugging dumps of processes etc.</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-16">
+                        <input type="checkbox" id="bit-16" value="16">
+                        <span class="bit-value">16 (0x10)</span>
+                        <span class="bit-desc">Sync command</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-32">
+                        <input type="checkbox" id="bit-32" value="32">
+                        <span class="bit-value">32 (0x20)</span>
+                        <span class="bit-desc">Remount read-only</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-64">
+                        <input type="checkbox" id="bit-64" value="64">
+                        <span class="bit-value">64 (0x40)</span>
+                        <span class="bit-desc">Signalling of processes (term, kill, oom-kill)</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-128">
+                        <input type="checkbox" id="bit-128" value="128">
+                        <span class="bit-value">128 (0x80)</span>
+                        <span class="bit-desc">Reboot / Poweroff</span>
+                    </label>
+                </li>
+                <li>
+                    <label for="bit-256">
+                        <input type="checkbox" id="bit-256" value="256">
+                        <span class="bit-value">256 (0x100)</span>
+                        <span class="bit-desc">Nicing of all RT tasks</span>
+                    </label>
+                </li>
+            </ul>
+        </fieldset>
+    </main>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const sysrqInput = document.getElementById('sysrq-value');
+            const checkboxes = document.querySelectorAll('.bitmask-list li input');
+
+            const updateCheckboxes = () => {
+                const val = parseInt(sysrqInput.value, 10) || 0;
+                
+                let allChecked = true;
+                checkboxes.forEach(cb => {
+                    if (val === 1) {
+                        cb.checked = true;
+                    } else {
+                        const bit = parseInt(cb.value, 10);
+                        cb.checked = (val & bit) === bit;
+                    }
+                    if (!cb.checked) allChecked = false;
+                });
+            };
+
+            const updateTextbox = () => {
+                let sum = 0;
+                let allChecked = true;
+                
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        sum += parseInt(cb.value, 10);
+                    } else {
+                        allChecked = false;
+                    }
+                });
+
+                sysrqInput.value = allChecked ? 1 : sum;
+            };
+
+            sysrqInput.addEventListener('input', updateCheckboxes);
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateTextbox);
+            });
+
+            updateCheckboxes();
+        })();
+    </script>
+</body>
+</html>
